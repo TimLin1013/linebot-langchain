@@ -86,7 +86,7 @@ async def handle_callback(request: Request):
     for event in events:
         if not isinstance(event, MessageEvent):
             continue
-        if not isinstance(event.message,AudioMessage):   #TextMessage
+        if not isinstance(event.message,VoiceMessage):   #TextMessage
             continue
 
         tool_result = open_ai_agent.run('how are you')  #event.message.text
