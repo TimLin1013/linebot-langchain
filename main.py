@@ -83,17 +83,29 @@ async def handle_callback(request: Request):
     except InvalidSignatureError:
         raise HTTPException(status_code=400, detail="Invalid signature")
 
-    for event in events:
-        if not isinstance(event, MessageEvent):
-            continue
-        if not isinstance(event.message,VoiceMessage):   #TextMessage
-            continue
+for event in events:
+    if not isinstance(event, MessageEvent):
+        continue
 
-        tool_result = open_ai_agent.run('how are you')  #event.message.text
-
+    if isinstance(event.message, TextMessage):
+        # 如果是文字訊息
+        tool_result = open_ai_agent.run(event.message.text)
         await line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=tool_result)
         )
+
+    elif isinstance(event.message, AudioMessage):
+        # 如果是語音訊息
+        # 進行語音訊息的處理
+        tool_result = "抱歉，我還不能處理語音訊息"
+        await line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=tool_result)
+        )
+
+    else:
+        # 其他類型的訊息，你可以根據需要進行處理
+        continue
 
     return 'OK'
